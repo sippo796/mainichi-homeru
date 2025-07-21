@@ -12,7 +12,7 @@ export async function getArticles(): Promise<Article[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/articles`, {
       headers: {
-        'X-API-Key': '0gzmQ5GoGb8JbxijwxwOzan8GTGlbUBB9Yzaejm1'
+        'X-API-Key': 'lxX8JHizeB414Rl3pU7yE28nP7WmNnlB1jiZE9oq'
       },
       cache: 'force-cache', // ブラウザキャッシュを積極的に利用
     });
