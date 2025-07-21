@@ -13,6 +13,9 @@ export async function getArticles(): Promise<Article[]> {
     console.log(`Fetching articles from: ${API_BASE_URL}/api/articles`);
     
     const response = await fetch(`${API_BASE_URL}/api/articles`, {
+      headers: {
+        'X-API-Key': '0gzmQ5GoGb8JbxijwxwOzan8GTGlbUBB9Yzaejm1'
+      },
       next: { revalidate: 300 }, // 5分キャッシュ
     });
     
@@ -34,6 +37,9 @@ export async function getArticles(): Promise<Article[]> {
 
 export async function getArticle(date: string): Promise<Article> {
   const response = await fetch(`${API_BASE_URL}/api/articles/${date}`, {
+    headers: {
+      'X-API-Key': '0gzmQ5GoGb8JbxijwxwOzan8GTGlbUBB9Yzaejm1'
+    },
     next: { revalidate: 3600 }, // 1時間キャッシュ
   });
 
