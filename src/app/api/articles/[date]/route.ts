@@ -5,14 +5,14 @@ const API_KEY = process.env.API_KEY || ""; // サーバーサイド専用
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { date: string } }
+  { params }: { params: Promise<{ date: string }> }
 ) {
   try {
     if (!API_KEY) {
       return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
     }
 
-    const { date } = params;
+    const { date } = await params;
     
     const response = await fetch(`${API_BASE_URL}/api/articles/${date}`, {
       headers: {
