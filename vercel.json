@@ -9,5 +9,8 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "ACCESS_TOKEN": "baystars2025homeru"
+  }
 }
