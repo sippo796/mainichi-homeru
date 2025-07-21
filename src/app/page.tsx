@@ -8,14 +8,18 @@ import { Article } from "@/lib/api";
 export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   useEffect(() => {
     const loadArticles = async () => {
       try {
+        setDebugInfo('Starting API call...');
         const articlesData = await getArticles();
+        setDebugInfo(`API call successful. Articles: ${articlesData?.length || 0}`);
         setArticles(articlesData);
       } catch (error) {
         console.error('Failed to load articles:', error);
+        setDebugInfo(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         setArticles([]);
       } finally {
         setLoading(false);
@@ -80,6 +84,11 @@ export default function HomePage() {
                 <p className="text-gray-600">
                   ベイスターズの応援記事をお楽しみに！
                 </p>
+                {debugInfo && (
+                  <p className="text-sm text-blue-600 mt-4 p-2 bg-blue-50 rounded">
+                    Debug: {debugInfo}
+                  </p>
+                )}
               </div>
             </div>
           ) : articles.length > 0 ? (
@@ -94,6 +103,11 @@ export default function HomePage() {
                 <p className="text-gray-600">
                   ベイスターズの応援記事をお楽しみに！
                 </p>
+                {debugInfo && (
+                  <p className="text-sm text-red-600 mt-4 p-2 bg-red-50 rounded">
+                    Debug: {debugInfo}
+                  </p>
+                )}
               </div>
             </div>
           )}
