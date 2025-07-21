@@ -1,5 +1,7 @@
 import { getArticle } from "@/lib/api";
 import Link from "next/link";
+import BackLink from "@/components/BackLink";
+import { Suspense } from "react";
 
 export default async function ArticlePage(props: {
   params: Promise<{ date: string }>;
@@ -14,15 +16,9 @@ export default async function ArticlePage(props: {
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="mb-6">
-            <Link 
-              href="/" 
-              className="inline-flex items-center text-blue-100 hover:text-white transition-colors"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              記事一覧に戻る
-            </Link>
+            <Suspense fallback={<div>Loading...</div>}>
+              <BackLink />
+            </Suspense>
           </nav>
           
           <div className="flex items-center space-x-4">

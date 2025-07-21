@@ -1,16 +1,21 @@
+'use client';
+
 import Link from "next/link";
 import { Article } from "@/lib/api";
+import { useToken } from "@/hooks/useToken";
 
 interface ArticleListProps {
   articles: Article[];
 }
 
 export default function ArticleList({ articles }: ArticleListProps) {
+  const token = useToken();
+  
   return (
     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
       {articles.map((article, index) => (
         <article key={article.date} className="group">
-          <Link href={`/article/${article.date}`} className="block">
+          <Link href={`/article/${article.date}${token ? `?token=${token}` : ''}`} className="block">
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-100 overflow-hidden h-full">
               {/* Card Header with gradient */}
               <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white relative overflow-hidden">
