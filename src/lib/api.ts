@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+// Next.js API Routes経由でセキュアにアクセス
+const API_BASE_URL = "/api"; // 内部API Routes
 
 export interface Article {
   date: string;
@@ -10,10 +11,7 @@ export interface Article {
 
 export async function getArticles(): Promise<Article[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/articles`, {
-      headers: {
-        'X-API-Key': 'lxX8JHizeB414Rl3pU7yE28nP7WmNnlB1jiZE9oq'
-      },
+    const response = await fetch(`${API_BASE_URL}/articles`, {
       cache: 'force-cache', // ブラウザキャッシュを積極的に利用
     });
 
@@ -30,10 +28,7 @@ export async function getArticles(): Promise<Article[]> {
 }
 
 export async function getArticle(date: string): Promise<Article> {
-  const response = await fetch(`${API_BASE_URL}/api/articles/${date}`, {
-    headers: {
-      'X-API-Key': '0gzmQ5GoGb8JbxijwxwOzan8GTGlbUBB9Yzaejm1'
-    },
+  const response = await fetch(`${API_BASE_URL}/articles/${date}`, {
     cache: 'force-cache', // ブラウザキャッシュを積極的に利用
   });
 
