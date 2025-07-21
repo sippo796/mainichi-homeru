@@ -1,14 +1,57 @@
+'use client';
+
 import { getArticle } from "@/lib/api";
 import Link from "next/link";
 import BackLink from "@/components/BackLink";
-import { Suspense } from "react";
+import { useEffect, useState } from "react";
+import { Article } from "@/lib/api";
 
-export default async function ArticlePage(props: {
+export default function ArticlePage(props: {
   params: Promise<{ date: string }>;
 }) {
-  const params = await props.params;
-  const { date } = params;
-  const article = await getArticle(date);
+  const [article, setArticle] = useState<Article | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadArticle = async () => {
+      try {
+        const params = await props.params;
+        const { date } = params;
+        const articleData = await getArticle(date);
+        setArticle(articleData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load article');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadArticle();
+  }, [props.params]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">記事を読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !article) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">😔</div>
+          <p className="text-xl text-gray-500 mb-2">記事を読み込めませんでした</p>
+          <p className="text-gray-400">{error || '記事が見つかりません'}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
@@ -16,9 +59,7 @@ export default async function ArticlePage(props: {
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="mb-6">
-            <Suspense fallback={<div>Loading...</div>}>
-              <BackLink />
-            </Suspense>
+            <BackLink />
           </nav>
           
           <div className="flex items-center space-x-4">

@@ -1,8 +1,29 @@
+'use client';
+
 import { getArticles } from "@/lib/api";
 import ArticleList from "@/components/ArticleList";
+import { useEffect, useState } from "react";
+import { Article } from "@/lib/api";
 
-export default async function HomePage() {
-  const articles = await getArticles();
+export default function HomePage() {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        const articlesData = await getArticles();
+        setArticles(articlesData);
+      } catch (error) {
+        console.error('Failed to load articles:', error);
+        setArticles([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadArticles();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
@@ -49,7 +70,19 @@ export default async function HomePage() {
             </div>
           </div>
           
-          {articles.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-16">
+              <div className="bg-white rounded-2xl shadow-lg p-12 border border-blue-100">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  記事を読み込み中...
+                </h3>
+                <p className="text-gray-600">
+                  ベイスターズの応援記事をお楽しみに！
+                </p>
+              </div>
+            </div>
+          ) : articles.length > 0 ? (
             <ArticleList articles={articles} />
           ) : (
             <div className="text-center py-16">
