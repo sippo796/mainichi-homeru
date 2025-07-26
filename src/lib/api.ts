@@ -11,9 +11,7 @@ export interface Article {
 
 export async function getArticles(): Promise<Article[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/articles`, {
-      cache: 'force-cache', // ブラウザキャッシュを積極的に利用
-    });
+    const response = await fetch(`${API_BASE_URL}/articles`);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: Failed to fetch articles`);
@@ -29,7 +27,7 @@ export async function getArticles(): Promise<Article[]> {
 
 export async function getArticle(date: string): Promise<Article> {
   const response = await fetch(`${API_BASE_URL}/articles/${date}`, {
-    cache: 'force-cache', // ブラウザキャッシュを積極的に利用
+    cache: "force-cache", // ブラウザキャッシュを積極的に利用
   });
 
   if (!response.ok) {
