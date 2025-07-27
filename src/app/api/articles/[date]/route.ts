@@ -13,12 +13,30 @@ export async function GET(
     }
 
     const { date } = await params;
+    const { searchParams } = new URL(request.url);
+    const timePeriod = searchParams.get('timePeriod') as 'morning' | 'evening' | null;
     
+    // 時間帯指定がある場合は時間帯別ファイルを試行
+    if (timePeriod) {
+      const periodResponse = await fetch(`${API_BASE_URL}/api/articles/${date}-${timePeriod}`, {
+        headers: {
+          'X-API-Key': API_KEY
+        },
+        cache: 'no-store',
+      });
+      
+      if (periodResponse.ok) {
+        const data = await periodResponse.json();
+        return NextResponse.json({ ...data, timePeriod, filename: `${date}-${timePeriod}.md` });
+      }
+    }
+    
+    // 時間帯指定がないか、時間帯別ファイルが見つからない場合は従来の日付のみファイルを試行
     const response = await fetch(`${API_BASE_URL}/api/articles/${date}`, {
       headers: {
         'X-API-Key': API_KEY
       },
-      cache: 'no-store', // サーバーサイドでは都度取得
+      cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -26,7 +44,7 @@ export async function GET(
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json({ ...data, filename: `${date}.md` });
     
   } catch (error) {
     console.error('API Error:', error);
