@@ -13,18 +13,30 @@ export default function ArticleList({ articles }: ArticleListProps) {
   
   return (
     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-      {articles.map((article, index) => (
-        <article key={article.date} className="group">
-          <Link href={`/article/${article.date}${token ? `?token=${token}` : ''}`} className="block">
+      {articles.map((article, index) => {
+        const linkUrl = article.timePeriod 
+          ? `/article/${article.date}?timePeriod=${article.timePeriod}${token ? `&token=${token}` : ''}`
+          : `/article/${article.date}${token ? `?token=${token}` : ''}`;
+        
+        return (
+        <article key={`${article.date}-${article.timePeriod || 'default'}`} className="group">
+          <Link href={linkUrl} className="block">
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-100 overflow-hidden h-full">
               {/* Card Header with gradient */}
               <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
-                      #{String(index + 1).padStart(2, '0')}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                        #{String(index + 1).padStart(2, '0')}
+                      </span>
+                      {article.timePeriod && (
+                        <span className="text-xs font-semibold bg-white/30 px-2 py-1 rounded-full backdrop-blur-sm">
+                          {article.timePeriod === 'morning' ? '🌅 朝' : '🌙 夜'}
+                        </span>
+                      )}
+                    </div>
                     <span className="text-2xl">⚾</span>
                   </div>
                   <time className="text-sm text-blue-100 font-medium">
@@ -56,16 +68,22 @@ export default function ArticleList({ articles }: ArticleListProps) {
                     </svg>
                   </span>
                   
-                  {/* Category badge */}
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    応援記事
-                  </span>
+                  {/* Category badges */}
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      応援記事
+                    </span>
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 border border-purple-200">
+                      🤖 AI
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </Link>
         </article>
-      ))}
+        );
+      })}
     </div>
   );
 }

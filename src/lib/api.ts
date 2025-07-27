@@ -7,6 +7,8 @@ export interface Article {
   preview?: string;
   content?: string;
   lastModified: string;
+  timePeriod?: 'morning' | 'evening'; // 新しい時間帯情報（オプショナル）
+  filename?: string; // 実際のファイル名
 }
 
 export async function getArticles(): Promise<Article[]> {
@@ -25,8 +27,12 @@ export async function getArticles(): Promise<Article[]> {
   }
 }
 
-export async function getArticle(date: string): Promise<Article> {
-  const response = await fetch(`${API_BASE_URL}/articles/${date}`, {
+export async function getArticle(date: string, timePeriod?: 'morning' | 'evening'): Promise<Article> {
+  const url = timePeriod 
+    ? `${API_BASE_URL}/articles/${date}?timePeriod=${timePeriod}`
+    : `${API_BASE_URL}/articles/${date}`;
+    
+  const response = await fetch(url, {
     cache: "force-cache", // ブラウザキャッシュを積極的に利用
   });
 
