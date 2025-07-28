@@ -14,12 +14,10 @@ export default function ArticleList({ articles }: ArticleListProps) {
   return (
     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
       {articles.map((article, index) => {
-        const linkUrl = article.timePeriod 
-          ? `/article/${article.date}?timePeriod=${article.timePeriod}${token ? `&token=${token}` : ''}`
-          : `/article/${article.date}${token ? `?token=${token}` : ''}`;
+        const linkUrl = `/article/${article.articleId}${token ? `?token=${token}` : ''}`;
         
         return (
-        <article key={`${article.date}-${article.timePeriod || 'default'}`} className="group">
+        <article key={article.articleId} className="group">
           <Link href={linkUrl} className="block">
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-100 overflow-hidden h-full">
               {/* Card Header with gradient */}
@@ -40,11 +38,14 @@ export default function ArticleList({ articles }: ArticleListProps) {
                     <span className="text-2xl">⚾</span>
                   </div>
                   <time className="text-sm text-blue-100 font-medium">
-                    {new Date(article.lastModified).toLocaleDateString("ja-JP", {
+                    {new Date(article.datetime).toLocaleDateString("ja-JP", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
                     })}
+                    <span className="ml-2 text-xs opacity-80">
+                      {article.time.slice(0, 2)}:{article.time.slice(2)}
+                    </span>
                   </time>
                 </div>
               </div>
