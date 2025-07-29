@@ -6,15 +6,21 @@ import { useToken } from "@/hooks/useToken";
 
 interface ArticleListProps {
   articles: Article[];
+  currentPage?: number;
+  limit?: number;
 }
 
-export default function ArticleList({ articles }: ArticleListProps) {
+export default function ArticleList({ articles, currentPage = 1, limit = 10 }: ArticleListProps) {
   const token = useToken();
   
   return (
     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
       {articles.map((article, index) => {
-        const linkUrl = `/article/${article.articleId}${token ? `?token=${token}` : ''}`;
+        const params = new URLSearchParams();
+        if (token) params.append('token', token);
+        if (currentPage > 1) params.append('page', currentPage.toString());
+        if (limit !== 10) params.append('limit', limit.toString());
+        const linkUrl = `/article/${article.articleId}${params.toString() ? `?${params.toString()}` : ''}`;
         
         return (
         <article key={article.articleId} className="group">
@@ -27,7 +33,7 @@ export default function ArticleList({ articles }: ArticleListProps) {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
-                        #{String(index + 1).padStart(2, '0')}
+                        #{String((currentPage - 1) * limit + index + 1).padStart(2, '0')}
                       </span>
                       {article.timePeriod && (
                         <span className="text-xs font-semibold bg-white/30 px-2 py-1 rounded-full backdrop-blur-sm">
