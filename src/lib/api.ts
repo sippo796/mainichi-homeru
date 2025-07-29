@@ -14,19 +14,48 @@ export interface Article {
   filename?: string;
 }
 
-export async function getArticles(): Promise<Article[]> {
+export interface Pagination {
+  currentPage: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+export interface ArticlesResponse {
+  articles: Article[];
+  pagination: Pagination;
+}
+
+export async function getArticles(limit?: number, page?: number): Promise<ArticlesResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/articles`);
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', limit.toString());
+    if (page) params.append('page', page.toString());
+    
+    const url = `${API_BASE_URL}/articles${params.toString() ? `?${params.toString()}` : ''}`;
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: Failed to fetch articles`);
     }
 
     const data = await response.json();
-    return data.articles || [];
+    return data;
   } catch (error) {
-    // エラー時は空配列を返す
-    return [];
+    // エラー時はデフォルト値を返す
+    return {
+      articles: [],
+      pagination: {
+        currentPage: 1,
+        limit: 10,
+        totalCount: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false
+      }
+    };
   }
 }
 

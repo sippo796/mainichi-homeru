@@ -2,27 +2,62 @@
 
 import { getArticles } from "@/lib/api";
 import ArticleList from "@/components/ArticleList";
+import PaginationComponent from "@/components/Pagination";
 import { useEffect, useState } from "react";
-import { Article } from "@/lib/api";
+import { Article, ArticlesResponse } from "@/lib/api";
 
 export default function HomePage() {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articlesResponse, setArticlesResponse] = useState<ArticlesResponse>({
+    articles: [],
+    pagination: {
+      currentPage: 1,
+      limit: 10,
+      totalCount: 0,
+      totalPages: 0,
+      hasNext: false,
+      hasPrev: false
+    }
+  });
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
+  const loadArticles = async (page: number = currentPage, pageLimit: number = limit) => {
+    setLoading(true);
+    try {
+      const data = await getArticles(pageLimit, page);
+      setArticlesResponse(data);
+    } catch (error) {
+      setArticlesResponse({
+        articles: [],
+        pagination: {
+          currentPage: page,
+          limit: pageLimit,
+          totalCount: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false
+        }
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadArticles = async () => {
-      try {
-        const articlesData = await getArticles();
-        setArticles(articlesData);
-      } catch (error) {
-        setArticles([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadArticles();
   }, []);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    loadArticles(page, limit);
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setCurrentPage(1);
+    loadArticles(1, newLimit);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
@@ -81,8 +116,15 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-          ) : articles.length > 0 ? (
-            <ArticleList articles={articles} />
+          ) : articlesResponse.articles.length > 0 ? (
+            <>
+              <ArticleList articles={articlesResponse.articles} />
+              <PaginationComponent 
+                pagination={articlesResponse.pagination}
+                onPageChange={handlePageChange}
+                onLimitChange={handleLimitChange}
+              />
+            </>
           ) : (
             <div className="text-center py-16">
               <div className="bg-white rounded-2xl shadow-lg p-12 border border-blue-100">
