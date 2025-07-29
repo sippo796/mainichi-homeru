@@ -6,10 +6,12 @@ import PaginationComponent from "@/components/Pagination";
 import { useEffect, useState } from "react";
 import { Article, ArticlesResponse } from "@/lib/api";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useToken } from "@/hooks/useToken";
 
 export default function HomePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const token = useToken();
   
   const [articlesResponse, setArticlesResponse] = useState<ArticlesResponse>({
     articles: [],
@@ -58,6 +60,7 @@ export default function HomePage() {
 
   const updateURL = (page: number, pageLimit: number) => {
     const params = new URLSearchParams();
+    if (token) params.append('token', token);
     if (page > 1) params.append('page', page.toString());
     if (pageLimit !== 10) params.append('limit', pageLimit.toString());
     
