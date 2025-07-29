@@ -70,7 +70,7 @@ export default function ArticlePage(props: {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-2xl sm:text-3xl font-bold">
-                  {article.title || "記事"}
+                  {article.title || "まいにちほめる"}
                 </h1>
                 {article.timePeriod && (
                   <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
