@@ -5,8 +5,12 @@ import ArticleList from "@/components/ArticleList";
 import PaginationComponent from "@/components/Pagination";
 import { useEffect, useState } from "react";
 import { Article, ArticlesResponse } from "@/lib/api";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   const [articlesResponse, setArticlesResponse] = useState<ArticlesResponse>({
     articles: [],
     pagination: {
@@ -19,8 +23,12 @@ export default function HomePage() {
     }
   });
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [currentPage, setCurrentPage] = useState(() => {
+    return parseInt(searchParams.get('page') || '1', 10);
+  });
+  const [limit, setLimit] = useState(() => {
+    return parseInt(searchParams.get('limit') || '10', 10);
+  });
 
   const loadArticles = async (page: number = currentPage, pageLimit: number = limit) => {
     setLoading(true);
@@ -48,14 +56,25 @@ export default function HomePage() {
     loadArticles();
   }, []);
 
+  const updateURL = (page: number, pageLimit: number) => {
+    const params = new URLSearchParams();
+    if (page > 1) params.append('page', page.toString());
+    if (pageLimit !== 10) params.append('limit', pageLimit.toString());
+    
+    const newUrl = `/${params.toString() ? `?${params.toString()}` : ''}`;
+    router.replace(newUrl);
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    updateURL(page, limit);
     loadArticles(page, limit);
   };
 
   const handleLimitChange = (newLimit: number) => {
     setLimit(newLimit);
     setCurrentPage(1);
+    updateURL(1, newLimit);
     loadArticles(1, newLimit);
   };
 
@@ -118,7 +137,11 @@ export default function HomePage() {
             </div>
           ) : articlesResponse.articles.length > 0 ? (
             <>
-              <ArticleList articles={articlesResponse.articles} />
+              <ArticleList 
+                articles={articlesResponse.articles} 
+                currentPage={articlesResponse.pagination.currentPage}
+                limit={articlesResponse.pagination.limit}
+              />
               <PaginationComponent 
                 pagination={articlesResponse.pagination}
                 onPageChange={handlePageChange}
