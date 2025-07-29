@@ -9,7 +9,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/articles`, {
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get('limit');
+    const page = searchParams.get('page');
+    
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', limit);
+    if (page) params.append('page', page);
+    
+    const url = `${API_BASE_URL}/api/articles${params.toString() ? `?${params.toString()}` : ''}`;
+    
+    const response = await fetch(url, {
       headers: {
         'X-API-Key': API_KEY
       },
